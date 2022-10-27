@@ -3,6 +3,8 @@ import kotlin.math.pow
 fun main() {
     val seqList: MutableList<MutableList<Double>> = ArrayList() // alternatively: = mutableListOf()
     val seqList2: MutableList<Double> = mutableListOf<Double>()
+    var zScore: MutableList<Double> = mutableListOf<Double>()
+
     seqList.add(
         mutableListOf<Double>(
             1666508400000.0, 19185.0, 19169.0, 19185.0, 19165.0, 6.67853525
@@ -109,14 +111,21 @@ fun main() {
         var y = ((index[3] + index[4]) / 2)
         seqList2.add(y)
     }
-    println(seqList2)
-
     val SD = sd(seqList2)
+    var SR = seqList2.movingAverages()
+    var result: MutableList<Double> = mutableListOf<Double>()
+    var z_Score: MutableList<Double> = mutableListOf<Double>()
 
-    var SR =  seqList2.movingAverages()
-    println( SR)
-
-
+    for (i in 0..seqList2.size - 1) {
+        var score = seqList2[i] - SR[i]
+        result.add(score)
+    }
+    for (i in 0..result.size - 1) {
+        var z_score = result[i] / SD
+        z_Score.add(z_score)
+        i + 1
+    }
+    println(z_Score)
 }
 
 fun sd(data: MutableList<Double>): Double {
@@ -129,17 +138,23 @@ fun sd(data: MutableList<Double>): Double {
 }
 
 
-fun MutableList<Double>.movingAverages() {
+fun MutableList<Double>.movingAverages(): List<Double> {
 
     val window_size: Int = 4
     var moving_averages = mutableListOf<Double>()
 
-    for (i in 0..this.size - window_size + 1) {
-        for (i in 0..window_size - 1) {
-            var moving_average = this.subList(i,i + window_size).average()
-            moving_averages.add(moving_average)
-        }
+
+    for (i in 0..window_size - 2) {
+        var moving_average = this.subList(0, i + 1).sum() / (i + 1)
+        moving_averages.add(moving_average)
+        i + 1
     }
+    for (i in 0..this.size - window_size) {
+        var moving_average = this.subList(i, i + window_size).sum() / window_size
+        moving_averages.add(moving_average)
+        i + 1
+    }
+    return moving_averages
 }
 
 
